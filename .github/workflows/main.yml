@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  PYPI: ${{ secrets.PYPI }}
+
 jobs: 
   build:
 
@@ -21,7 +24,6 @@ jobs:
                    
       - name: Install dependencies
         run: |
-          sudo apt-get upgrade && sudo apt-get update && sudo apt-get --fix-missing
           sudo apt-get install python3-sphinx
           sudo apt-get install ghp-import
           python -m pip install --upgrade pip
@@ -48,10 +50,8 @@ jobs:
       # - name: Run ghp-import
       #   run: |
       #     ghp-import -n -p -f docs/_build/html
-
+      
       - name: Publish package
-        env:
-          PYPI: ${{ secrets.PYPI }}
         run: |
-          poetry config pypi-token.pypi ${{ secrets.PYPI }}
+          poetry config pypi-token.pypi $PYPI
           poetry publish --build
