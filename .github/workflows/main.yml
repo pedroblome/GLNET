@@ -21,7 +21,7 @@ jobs:
                    
       - name: Install dependencies
         run: |
-          sudo apt-get upgrade && sudo apt-get update
+          sudo apt-get upgrade && sudo apt-get update && sudo apt-get --fix-missing
           sudo apt-get install python3-sphinx
           sudo apt-get install ghp-import
           python -m pip install --upgrade pip
@@ -42,8 +42,6 @@ jobs:
           pytest -vv --cov
 
       - name: Build HTML
-        run: |
-          make html
 
       - name: Run ghp-import
         run: |
