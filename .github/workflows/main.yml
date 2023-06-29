@@ -41,7 +41,9 @@ jobs:
           cd tests/
           pytest -vv --cov
 
-      - name: Build HTML
+      # - name: Build HTML
+      #   run: |
+      #     make html
 
       - name: Run ghp-import
         run: |
