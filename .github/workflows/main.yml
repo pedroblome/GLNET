@@ -1,0 +1,58 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs: 
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+           python-version: "3.10"
+                   
+      - name: Install dependencies
+        run: |
+          sudo apt-get upgrade && apt-get update
+          sudo apt-get install python3-sphinx
+          sudo apt-get install ghp-import
+          python -m pip install --upgrade pip
+          pip install sphinx_rtd_theme
+          pip install imageio
+          pip install flake8 pytest pytest-cov
+          pip install poetry
+          poetry install
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test with pytest
+        run: |
+          cd tests/
+          pytest -vv --cov
+
+      - name: Build HTML
+        run: |
+          cd docs/
+          make html
+
+      - name: Run ghp-import
+        run: |
+          ghp-import -n -p -f docs/_build/html
+
+      - name: Publish package
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI }}
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI }}
+          poetry publish --build
