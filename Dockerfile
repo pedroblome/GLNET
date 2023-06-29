@@ -4,18 +4,16 @@ WORKDIR /
 
 
 # Copy the poetry.lock and pyproject.toml files to the working directory
-COPY poetry.lock pyproject.toml 
 
 
-
+COPY ./requirements.txt /requirements.txt
 COPY . .
 
 RUN pip install --upgrade pip && \
-    pip install poetry && \
-    poetry install --no-root
+    pip install -r requirements.txt &&\
+    pip install -U sphinx && \
+    sphinx-quickstart && \
+    sudo apt install make
 
-RUN poetry config installer.max-workers 40
-
-RUN poetry install --no-interaction --no-ansi -vvv
 
 CMD ["python3", "baseline.py"]
